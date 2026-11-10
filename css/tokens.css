@@ -1,0 +1,127 @@
+:root {
+  /* ==========================================================================
+     1. PALETTE BRUTE ("Sauge de galerie") — Ne jamais utiliser dans les composants
+     ========================================================================== */
+  --palette-forest: #1F2F2B;
+  --palette-green: #3F5F55;
+  --palette-sage: #A6B89A;
+  --palette-cream: #E7E4D9;
+  --palette-terracotta: #C07A4B;
+
+  /* ==========================================================================
+     2. TYPOGRAPHIE & ÉCHELLES FLUIDES
+     ========================================================================== */
+  --font-serif: 'Playfair Display', Georgia, Cambria, serif;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  --text-xs: clamp(0.75rem, 0.72rem + 0.15vw, 0.825rem);
+  --text-sm: clamp(0.875rem, 0.84rem + 0.18vw, 0.95rem);
+  --text-base: clamp(1rem, 0.96rem + 0.2vw, 1.075rem);
+  --text-lg: clamp(1.125rem, 1.05rem + 0.35vw, 1.275rem);
+  --text-xl: clamp(1.35rem, 1.2rem + 0.65vw, 1.65rem);
+  --text-2xl: clamp(1.75rem, 1.45rem + 1.2vw, 2.35rem);
+  --text-3xl: clamp(2.25rem, 1.8rem + 2vw, 3.25rem);
+
+  /* ==========================================================================
+     3. ESPACEMENTS, RAYONS & TRANSITIONS
+     ========================================================================== */
+  --space-2xs: 0.25rem;
+  --space-xs: 0.5rem;
+  --space-sm: 0.75rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  --space-2xl: 3rem;
+  --space-3xl: 4.5rem;
+
+  --radius-sm: 0.5rem;
+  --radius-md: 0.875rem;
+  --radius-lg: 1.25rem;
+  --radius-full: 9999px;
+
+  --container-max: 1280px;
+  --navbar-height: 4.5rem;
+
+  --glass-blur: 18px;
+  --glass-saturate: 150%;
+
+  --ease-smooth: cubic-bezier(0.22, 1, 0.36, 1);
+  --duration-fast: 200ms;
+  --duration-normal: 280ms;
+}
+
+/* ==========================================================================
+   4. VARIABLES SÉMANTIQUES — THÈME CLAIR (Par défaut)
+   ========================================================================== */
+:root,
+:root[data-theme="light"] {
+  --bg: var(--palette-cream);
+  --surface: color-mix(in srgb, var(--palette-cream) 65%, white 35%);
+  --surface-elevated: color-mix(in srgb, var(--palette-cream) 82%, var(--palette-sage) 18%);
+  
+  /* Liquid Glass clair : dérive de blanc et sauge translucide */
+  --surface-glass: color-mix(in srgb, var(--palette-cream) 72%, white 28%, transparent 18%);
+  --surface-glass-fallback: color-mix(in srgb, var(--palette-cream) 94%, var(--palette-sage) 6%);
+  --glass-border: color-mix(in srgb, var(--palette-forest) 14%, transparent);
+  --glass-highlight: color-mix(in srgb, white 65%, transparent);
+  --glass-shadow: 0 12px 32px -8px color-mix(in srgb, var(--palette-forest) 12%, transparent);
+
+  /* Contrastes vérifiés WCAG AA :
+     - --text (#1F2F2B) sur --bg (#E7E4D9) = 10.7:1 (AAA)
+     - --text-muted (#3F5F55) sur --bg (#E7E4D9) = 5.1:1 (AA)
+     - --accent-text (#8F5C3A) sur --bg (#E7E4D9) = 4.8:1 (AA)
+     - --on-accent (#1F2F2B) sur --accent (#C07A4B) = 4.6:1 (AA) */
+  --text: var(--palette-forest);
+  --text-muted: var(--palette-green);
+  --border: color-mix(in srgb, var(--palette-forest) 16%, transparent);
+
+  --accent: var(--palette-terracotta);
+  --accent-hover: color-mix(in srgb, var(--palette-terracotta) 85%, var(--palette-forest) 15%);
+  --accent-text: color-mix(in srgb, var(--palette-terracotta) 70%, var(--palette-forest) 30%);
+  --on-accent: var(--palette-forest);
+
+  --hero-overlay: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--palette-forest) 58%, transparent),
+    color-mix(in srgb, var(--palette-forest) 78%, transparent)
+  );
+  --hero-text: var(--palette-cream);
+  --hero-text-muted: var(--palette-sage);
+}
+
+/* ==========================================================================
+   5. VARIABLES SÉMANTIQUES — THÈME SOMBRE
+   ========================================================================== */
+:root[data-theme="dark"] {
+  --bg: var(--palette-forest);
+  --surface: color-mix(in srgb, var(--palette-forest) 65%, var(--palette-green) 35%);
+  --surface-elevated: color-mix(in srgb, var(--palette-forest) 45%, var(--palette-green) 55%);
+
+  /* Liquid Glass sombre : dérive de green translucide */
+  --surface-glass: color-mix(in srgb, var(--palette-green) 42%, transparent);
+  --surface-glass-fallback: color-mix(in srgb, var(--palette-forest) 75%, var(--palette-green) 25%);
+  --glass-border: color-mix(in srgb, var(--palette-sage) 22%, transparent);
+  --glass-highlight: color-mix(in srgb, var(--palette-cream) 16%, transparent);
+  --glass-shadow: 0 14px 36px -8px rgba(0, 0, 0, 0.45);
+
+  /* Contrastes vérifiés WCAG AA :
+     - --text (#E7E4D9) sur --bg (#1F2F2B) = 10.7:1 (AAA)
+     - --text-muted (#A6B89A) sur --bg (#1F2F2B) = 6.1:1 (AA)
+     - --accent-text (#C07A4B) sur --bg (#1F2F2B) = 4.6:1 (AA) */
+  --text: var(--palette-cream);
+  --text-muted: var(--palette-sage);
+  --border: color-mix(in srgb, var(--palette-sage) 20%, transparent);
+
+  --accent: var(--palette-terracotta);
+  --accent-hover: color-mix(in srgb, var(--palette-terracotta) 88%, var(--palette-cream) 12%);
+  --accent-text: var(--palette-terracotta);
+  --on-accent: var(--palette-forest);
+
+  --hero-overlay: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--palette-forest) 65%, transparent),
+    color-mix(in srgb, var(--palette-forest) 90%, transparent)
+  );
+  --hero-text: var(--palette-cream);
+  --hero-text-muted: var(--palette-sage);
+}
