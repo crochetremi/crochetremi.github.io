@@ -1,0 +1,119 @@
+.site-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  padding: var(--space-sm) 0;
+}
+
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 3.5rem;
+  padding: var(--space-xs) var(--space-lg);
+}
+
+.navbar__brand {
+  font-family: var(--font-serif);
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.01em;
+}
+
+.navbar__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.navbar__menu {
+  display: none;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.navbar__link {
+  position: relative;
+  padding: var(--space-xs) var(--space-sm);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--text-muted);
+  border-radius: var(--radius-sm);
+  transition: color var(--duration-fast) var(--ease-smooth);
+}
+
+.navbar__link:hover {
+  color: var(--text);
+}
+
+.navbar__link[aria-current="page"] {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.navbar__link[aria-current="page"]::after {
+  content: "";
+  position: absolute;
+  bottom: 2px;
+  left: var(--space-sm);
+  right: var(--space-sm);
+  height: 2px;
+  background-color: var(--accent);
+  border-radius: var(--radius-full);
+}
+
+.navbar__icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.35rem;
+  height: 2.35rem;
+  color: var(--text);
+  background: transparent;
+  cursor: pointer;
+}
+
+.navbar__icon-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent-text);
+}
+
+.navbar__burger {
+  display: inline-flex;
+}
+
+/* Menu mobile déroulant */
+.navbar__dropdown {
+  display: none;
+  margin-top: var(--space-xs);
+  padding: var(--space-md);
+}
+
+.navbar__dropdown[data-open="true"] {
+  display: block;
+}
+
+.navbar__mobile-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.navbar__mobile-list .navbar__link {
+  display: block;
+  padding: var(--space-sm) var(--space-md);
+}
+
+@media (min-width: 768px) {
+  .navbar__menu {
+    display: flex;
+  }
+
+  .navbar__burger,
+  .navbar__dropdown {
+    display: none !important;
+  }
+}

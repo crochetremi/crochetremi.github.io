@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CV — Rémi Crochet</title>
+  <meta name="description" content="Parcours professionnel, formations et compétences de Prénom Nom.">
+  
+  <meta property="og:type" content="profile">
+  <meta property="og:title" content="CV — Rémi Crochet">
+  <meta property="og:description" content="Parcours professionnel, formations et compétences de Prénom Nom.">
+  <meta property="og:image" content="./assets/avatar-placeholder.svg">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
+
+  <script>
+    (function() {
+      const saved = localStorage.getItem('portfolio_theme');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      document.documentElement.setAttribute('data-theme', saved || (prefersDark ? 'dark' : 'light'));
+    })();
+  </script>
+
+  <link rel="stylesheet" href="./css/tokens.css">
+  <link rel="stylesheet" href="./css/base.css">
+  <link rel="stylesheet" href="./css/components/glass.css">
+  <link rel="stylesheet" href="./css/components/navbar.css">
+  <link rel="stylesheet" href="./css/components/footer.css">
+  <link rel="stylesheet" href="./css/pages/cv.css">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Aller au contenu principal</a>
+
+  <header id="navbar-root" class="site-header"></header>
+
+  <main id="main-content" class="container page-offset">
+    <div id="cv-root" class="cv-layout"></div>
+  </main>
+
+  <footer id="footer-root" class="site-footer"></footer>
+
+  <script type="module" src="./js/main.js"></script>
+  <script type="module" src="./js/pages/cv.js"></script>
+</body>
+</html>
