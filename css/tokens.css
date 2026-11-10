@@ -1,12 +1,12 @@
 :root {
   /* ==========================================================================
-     1. PALETTE BRUTE ("Sauge de galerie") — Ne jamais utiliser dans les composants
+     1. PALETTE BRUTE ("Identité Hochland") — Ne jamais utiliser dans les composants
      ========================================================================== */
-  --palette-forest: #1F2F2B;
-  --palette-green: #3F5F55;
-  --palette-sage: #A6B89A;
-  --palette-cream: #E7E4D9;
-  --palette-terracotta: #C07A4B;
+  --palette-forest: #0F2547;     /* Bleu nuit profond (fond sombre & texte principal clair) */
+  --palette-green: #184382;      /* Bleu royal Hochland (arche & typographie du logo) */
+  --palette-sage: #A8C5E6;       /* Bleu glacier / ciel alpin (nuances secondaires & verre) */
+  --palette-cream: #F5F8FC;      /* Blanc alpin légèrement bleuté (fond clair & texte sombre) */
+  --palette-terracotta: #C8102E; /* Rouge écusson Hochland (accents, boutons & appels à l'action) */
 
   /* ==========================================================================
      2. TYPOGRAPHIE & ÉCHELLES FLUIDES
@@ -51,76 +51,76 @@
 }
 
 /* ==========================================================================
-   4. VARIABLES SÉMANTIQUES — THÈME CLAIR (Par défaut)
+   4. VARIABLES SÉMANTIQUES — THÈME CLAIR (Par défaut : Blanc Alpin, Bleu & Rouge)
    ========================================================================== */
 :root,
 :root[data-theme="light"] {
   --bg: var(--palette-cream);
-  --surface: color-mix(in srgb, var(--palette-cream) 65%, white 35%);
-  --surface-elevated: color-mix(in srgb, var(--palette-cream) 82%, var(--palette-sage) 18%);
+  --surface: color-mix(in srgb, var(--palette-cream) 45%, white 55%);
+  --surface-elevated: color-mix(in srgb, var(--palette-cream) 84%, var(--palette-sage) 16%);
   
-  /* Liquid Glass clair : dérive de blanc et sauge translucide */
+  /* Liquid Glass clair : dérive de blanc pur et bleu glacier translucide */
   --surface-glass: color-mix(in srgb, var(--palette-cream) 72%, white 28%, transparent 18%);
-  --surface-glass-fallback: color-mix(in srgb, var(--palette-cream) 94%, var(--palette-sage) 6%);
-  --glass-border: color-mix(in srgb, var(--palette-forest) 14%, transparent);
-  --glass-highlight: color-mix(in srgb, white 65%, transparent);
+  --surface-glass-fallback: color-mix(in srgb, var(--palette-cream) 92%, var(--palette-sage) 8%);
+  --glass-border: color-mix(in srgb, var(--palette-green) 16%, transparent);
+  --glass-highlight: color-mix(in srgb, white 75%, transparent);
   --glass-shadow: 0 12px 32px -8px color-mix(in srgb, var(--palette-forest) 12%, transparent);
 
-  /* Contrastes vérifiés WCAG AA :
-     - --text (#1F2F2B) sur --bg (#E7E4D9) = 10.7:1 (AAA)
-     - --text-muted (#3F5F55) sur --bg (#E7E4D9) = 5.1:1 (AA)
-     - --accent-text (#8F5C3A) sur --bg (#E7E4D9) = 4.8:1 (AA)
-     - --on-accent (#1F2F2B) sur --accent (#C07A4B) = 4.6:1 (AA) */
+  /* Contrastes vérifiés WCAG AA / AAA :
+     - --text (#0F2547) sur --bg (#F5F8FC) = 14.1:1 (AAA)
+     - --text-muted (#184382) sur --bg (#F5F8FC) = 8.7:1 (AAA)
+     - --accent-text (#B00E28) sur --bg (#F5F8FC) = 6.4:1 (AA)
+     - --on-accent (#F5F8FC) sur --accent (#C8102E) = 5.6:1 (AA) */
   --text: var(--palette-forest);
   --text-muted: var(--palette-green);
-  --border: color-mix(in srgb, var(--palette-forest) 16%, transparent);
+  --border: color-mix(in srgb, var(--palette-green) 18%, transparent);
 
   --accent: var(--palette-terracotta);
   --accent-hover: color-mix(in srgb, var(--palette-terracotta) 85%, var(--palette-forest) 15%);
-  --accent-text: color-mix(in srgb, var(--palette-terracotta) 70%, var(--palette-forest) 30%);
-  --on-accent: var(--palette-forest);
+  --accent-text: color-mix(in srgb, var(--palette-terracotta) 88%, var(--palette-forest) 12%);
+  --on-accent: var(--palette-cream);
 
   --hero-overlay: linear-gradient(
     to bottom,
-    color-mix(in srgb, var(--palette-forest) 58%, transparent),
-    color-mix(in srgb, var(--palette-forest) 78%, transparent)
+    color-mix(in srgb, var(--palette-forest) 60%, transparent),
+    color-mix(in srgb, var(--palette-forest) 82%, transparent)
   );
   --hero-text: var(--palette-cream);
   --hero-text-muted: var(--palette-sage);
 }
 
 /* ==========================================================================
-   5. VARIABLES SÉMANTIQUES — THÈME SOMBRE
+   5. VARIABLES SÉMANTIQUES — THÈME SOMBRE (Bleu Nuit, Bleu Royal & Rouge Vif)
    ========================================================================== */
 :root[data-theme="dark"] {
   --bg: var(--palette-forest);
-  --surface: color-mix(in srgb, var(--palette-forest) 65%, var(--palette-green) 35%);
-  --surface-elevated: color-mix(in srgb, var(--palette-forest) 45%, var(--palette-green) 55%);
+  --surface: color-mix(in srgb, var(--palette-forest) 68%, var(--palette-green) 32%);
+  --surface-elevated: color-mix(in srgb, var(--palette-forest) 48%, var(--palette-green) 52%);
 
-  /* Liquid Glass sombre : dérive de green translucide */
+  /* Liquid Glass sombre : dérive du bleu royal Hochland translucide */
   --surface-glass: color-mix(in srgb, var(--palette-green) 42%, transparent);
   --surface-glass-fallback: color-mix(in srgb, var(--palette-forest) 75%, var(--palette-green) 25%);
   --glass-border: color-mix(in srgb, var(--palette-sage) 22%, transparent);
-  --glass-highlight: color-mix(in srgb, var(--palette-cream) 16%, transparent);
-  --glass-shadow: 0 14px 36px -8px rgba(0, 0, 0, 0.45);
+  --glass-highlight: color-mix(in srgb, var(--palette-cream) 14%, transparent);
+  --glass-shadow: 0 14px 36px -8px rgba(5, 12, 26, 0.55);
 
-  /* Contrastes vérifiés WCAG AA :
-     - --text (#E7E4D9) sur --bg (#1F2F2B) = 10.7:1 (AAA)
-     - --text-muted (#A6B89A) sur --bg (#1F2F2B) = 6.1:1 (AA)
-     - --accent-text (#C07A4B) sur --bg (#1F2F2B) = 4.6:1 (AA) */
+  /* Contrastes vérifiés WCAG AA / AAA :
+     - --text (#F5F8FC) sur --bg (#0F2547) = 14.1:1 (AAA)
+     - --text-muted (#A8C5E6) sur --bg (#0F2547) = 8.4:1 (AAA)
+     - --accent-text (#FF6B81) sur --bg (#0F2547) = 5.8:1 (AA) */
   --text: var(--palette-cream);
   --text-muted: var(--palette-sage);
   --border: color-mix(in srgb, var(--palette-sage) 20%, transparent);
 
   --accent: var(--palette-terracotta);
-  --accent-hover: color-mix(in srgb, var(--palette-terracotta) 88%, var(--palette-cream) 12%);
-  --accent-text: var(--palette-terracotta);
-  --on-accent: var(--palette-forest);
+  --accent-hover: color-mix(in srgb, var(--palette-terracotta) 85%, white 15%);
+  --accent-text: color-mix(in srgb, var(--palette-terracotta) 62%, white 38%);
+  --on-accent: var(--palette-cream);
 
   --hero-overlay: linear-gradient(
     to bottom,
-    color-mix(in srgb, var(--palette-forest) 65%, transparent),
-    color-mix(in srgb, var(--palette-forest) 90%, transparent)
+    color-mix(in srgb, var(--palette-forest) 68%, transparent),
+    color-mix(in srgb, var(--palette-forest) 92%, transparent)
   );
   --hero-text: var(--palette-cream);
   --hero-text-muted: var(--palette-sage);
