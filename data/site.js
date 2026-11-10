@@ -1,6 +1,6 @@
 export const siteData = {
   fullName: 'Rémi Crochet',
-  role: 'Intitulé du poste / Rôle principal',
+  role: ' Étudiant en troisième année de BUT Informatique - Alternant chez Hochland France',
   avatar: './assets/avatar-placeholder.svg',
   avatarAlt: 'Portrait de Rémi Crochet',
   heroBackground: './assets/hero-placeholder.svg',

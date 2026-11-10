@@ -1,55 +1,70 @@
 export const cvData = {
-  profileSummary: 'Résumé du profil professionnel (2 à 4 lignes). Présentez ici votre spécialité, votre approche de travail et ce que vous recherchez.',
+  profileSummary: 'Administrateur Systèmes et Réseaux en alternance, spécialisé dans la conception d’infrastructures résilientes, la virtualisation et l’automatisation de la supervision. Mon approche repose sur une maîtrise fine des dépendances techniques pour garantir le maintien en condition opérationnelle (MCO) et une supervision fiable orientée production.',
   pdfUrl: './assets/cv-placeholder.pdf',
   pdfButtonLabel: 'Télécharger le CV (PDF)',
 
   experiences: [
     {
-      period: 'MM/AAAA — Présent',
-      role: 'Intitulé du poste 1',
-      organization: 'Nom de l’organisation / structure',
-      location: 'Ville, Pays',
-      description: 'Description des responsabilités principales, des réalisations et du périmètre d’intervention (2–3 lignes).'
+      period: '09/2026 — Présent',
+      role: 'Alternant en Administration Systèmes et Réseaux',
+      organization: 'Henri Hutin - Groupe Hochland',
+      location: 'Dieue-sur-Meuse, France',
+      description: 'Pilotage de la refonte globale de la supervision (migration PRTG vers Zabbix 8 couplée à NetBox/nbxsync) avec définition des seuils critiques, escalades d’astreinte et dashboards. Support N1/N2 (AD, ClearPass, Azure, GLPI/Jira) et projets d’infrastructure (migration clients légers vers LeafOS, stack ELK, simulation GNS3).'
     },
     {
-      period: 'MM/AAAA — MM/AAAA',
-      role: 'Intitulé du poste 2',
-      organization: 'Nom de l’organisation / structure',
-      location: 'Ville, Pays',
-      description: 'Description des responsabilités principales, des réalisations et du périmètre d’intervention (2–3 lignes).'
+      period: '07/2026 — 08/2026',
+      role: 'Technicien Informatique (CDD)',
+      organization: 'Henri Hutin - Groupe Hochland',
+      location: 'Dieue-sur-Meuse, France',
+      description: 'Maintien en condition opérationnelle des équipements bureautiques et industriels sur lignes de production (terminaux MES XTIME, sondes JRI MySirius) et déploiement SCCM. Benchmark de solutions clients légers (10ZiG vs LeafOS), maintenance réseau/Wi-Fi et échanges techniques en anglais avec les équipes internationales du groupe.'
+    },
+    {
+      period: '02/2026 — 07/2026',
+      role: 'Stagiaire en Administration Systèmes et Réseaux',
+      organization: 'Henri Hutin - Groupe Hochland',
+      location: 'Dieue-sur-Meuse, France',
+      description: 'Conception et déploiement de A à Z d’un laboratoire d’essais isolé : architecture réseau collapsed-core (Aruba 3810M en stacking, VLANs, ACLs) et cluster VMware HA/vMotion sur stockage SAN. Implémentation des services Windows Server (AD, DNS, DHCP, déploiement PXE WDS/MDT) et sécurisation des flux via pare-feu OPNsense et 802.1X (RADIUS/NPS).'
     }
   ],
 
   education: [
     {
-      period: 'AAAA — AAAA',
-      degree: 'Intitulé du diplôme ou de la certification',
-      school: 'Nom de l’établissement',
-      location: 'Ville, Pays',
-      details: 'Mention, spécialisation ou travaux principaux réalisés.'
+      period: '2024 — 2027',
+      degree: 'BUT Informatique — Parcours DACS',
+      school: 'IUT Nancy-Charlemagne (Université de Lorraine)',
+      location: 'Nancy, France',
+      details: 'Parcours Déploiement d’Applications Communicantes et Sécurisées (Niveau L3). Troisième année réalisée en alternance.'
     },
     {
-      period: 'AAAA — AAAA',
-      degree: 'Intitulé du diplôme précédent',
-      school: 'Nom de l’établissement',
-      location: 'Ville, Pays',
-      details: 'Mention, spécialisation ou travaux principaux réalisés.'
+      period: '2021 — 2024',
+      degree: 'Baccalauréat Général',
+      school: 'Lycée Jean-Auguste Margueritte',
+      location: 'Verdun, France',
+      details: 'Mention Très Bien — Section Européenne.'
     }
   ],
 
   skills: [
     {
-      category: 'Domaine de compétence 1',
-      items: ['Compétence A', 'Compétence B', 'Compétence C', 'Compétence D']
+      category: 'Supervision, Logs & Documentation',
+      items: ['Zabbix 7 et 8', 'NetBox & nbxsync', 'PRTG', 'ELK & Graylog', 'Opsgenie', 'Confluence']
     },
     {
-      category: 'Domaine de compétence 2',
-      items: ['Outil / Méthode 1', 'Outil / Méthode 2', 'Outil / Méthode 3']
+      category: 'Réseau & Sécurité',
+      items: ['Aruba (Switching & Wi-Fi)', 'Aruba ClearPass & 802.1X (RADIUS)', 'OPNsense & Check Point', 'Cisco', 'GNS3', 'NetDisco']
+    },
+    {
+      category: 'Systèmes, Virtualisation & Cloud',
+      items: ['VMware vSphere (ESXi, vCenter, HA)', 'Windows Server & Active Directory', 'Microsoft Azure', 'Debian GNU/Linux', 'HPE & Stockage SAN']
+    },
+    {
+      category: 'Déploiement, ITSM & Informatique Industrielle',
+      items: ['SCCM, WDS & MDT', 'Clients légers (LeafOS, Stratodesk, 10ZiG)', 'GLPI, Jira ITSM & Matrix42', 'MES GFOS XTIME & JRI MySirius', 'Frigate']
     }
   ],
 
   languages: [
-    { name: 'Langue 1', level: 'Niveau (ex. Langue maternelle)' },
-    { name: 'Langue 2', level: 'Niveau (ex. Courant / C1)' }
+    { name: 'Français', level: 'Langue maternelle' },
+    { name: 'Anglais', level: 'Professionnel (Section européenne, échanges groupe internationaux)' }
   ]
 };
