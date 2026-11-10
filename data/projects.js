@@ -45,7 +45,7 @@ export const projectsData = [
     displayDate: '10/06/2026',
     isoDate: '2026-06-10',
     featured: false,
-    image: './assets/windows-server.png',
+    image: './assets/windows-server.jpg',
     imageAlt: 'Chaîne de déploiement automatisé Windows Server via WDS, MDT et SCCM',
     description: 'Mise en place des services d’infrastructure Windows Server (Active Directory, DNS, DHCP) et automatisation de la masterisation des postes de travail via PXE (WDS, MDT et SCCM), accompagnée d’une standardisation de la sécurité du parc par GPO dans le cadre d\'une infrascture de test.',
     link: '#contact',
