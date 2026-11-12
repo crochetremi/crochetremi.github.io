@@ -1,57 +1,44 @@
 :root {
-  --glass-blur: 24px;
-  --glass-saturate: 180%;
-  --surface-glass: rgba(255, 255, 255, 0.12);
-  --surface-glass-fallback: rgba(40, 44, 60, 0.85);
-  --glass-border: rgba(255, 255, 255, 0.25);
-  --glass-highlight: rgba(255, 255, 255, 0.45);
-  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+  --glass-blur: 20px;
+  --glass-saturate: 160%;
+  --surface-glass: rgba(255, 255, 255, 0.06);
+  --surface-glass-fallback: rgba(24, 32, 56, 0.92);
+  --glass-border: rgba(255, 255, 255, 0.14);
+  --glass-highlight: rgba(255, 255, 255, 0.30);
+  --glass-shadow: 0 10px 30px rgba(0, 0, 0, 0.28);
 }
 
+/* Effet Liquid Glass (macOS) avec fallback pour navigateurs sans backdrop-filter */
 .glass-panel,
 .glass-card,
 .glass-pill {
-  position: relative;
-  isolation: isolate;
   background-color: var(--surface-glass-fallback);
+  /* Lumière douce venant du haut, au lieu de la buée diagonale */
+  background-image: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.07) 0%,
+    rgba(255, 255, 255, 0) 45%
+  );
   border: 1px solid var(--glass-border);
   box-shadow:
     var(--glass-shadow),
     inset 0 1px 0 0 var(--glass-highlight),
-    inset 1px 0 0 0 var(--glass-highlight),
-    inset 0 -1px 0 0 rgba(255, 255, 255, 0.08);
+    inset 0 -1px 0 0 rgba(255, 255, 255, 0.05);
 }
 
-/* Reflet spéculaire : donne le côté "liquide" */
-.glass-panel::before,
-.glass-card::before,
-.glass-pill::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  pointer-events: none;
-  z-index: -1;
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.35) 0%,
-    rgba(255, 255, 255, 0) 40%,
-    rgba(255, 255, 255, 0) 60%,
-    rgba(255, 255, 255, 0.12) 100%
-  );
-}
-
-@supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
   .glass-panel,
   .glass-card,
   .glass-pill {
     background-color: var(--surface-glass);
-    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate)) brightness(1.05);
-    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate)) brightness(1.05);
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   }
 }
 
-.glass-panel { border-radius: var(--radius-lg); }
+.glass-panel {
+  border-radius: var(--radius-lg);
+}
 
 .glass-card {
   border-radius: var(--radius-lg);
@@ -60,9 +47,19 @@
               box-shadow var(--duration-normal) var(--ease-smooth);
 }
 
+.glass-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255, 255, 255, 0.28);
+}
+
 .glass-pill {
   border-radius: var(--radius-full);
   transition: background-color var(--duration-fast) var(--ease-smooth),
               border-color var(--duration-fast) var(--ease-smooth),
               transform var(--duration-fast) var(--ease-smooth);
+}
+
+.glass-pill:hover {
+  background-color: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.28);
 }
