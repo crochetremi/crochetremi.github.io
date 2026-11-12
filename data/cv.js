@@ -1,5 +1,5 @@
 export const cvData = {
-  profileSummary: 'Administrateur Systèmes et Réseaux en alternance, spécialisé dans la conception d’infrastructures résilientes, la virtualisation et l’automatisation de la supervision. Mon approche repose sur une maîtrise fine des dépendances techniques pour garantir le maintien en condition opérationnelle (MCO) et une supervision fiable orientée production.',
+  profileSummary: 'Passionné par l\'automatisation et la fiabilité des infrastructures. J\'administre des environnements virtualisés et déploie des architectures as-code pour garantir la continuité de service en production.',
   pdfUrl: './assets/cv-placeholder.pdf',
   pdfButtonLabel: 'Télécharger le CV (PDF)',
 
@@ -65,6 +65,6 @@ export const cvData = {
 
   languages: [
     { name: 'Français', level: 'Langue maternelle' },
-    { name: 'Anglais', level: 'Professionnel (Section européenne, échanges groupe internationaux)' }
+    { name: 'Anglais', level: 'Professionnel (Cambridge B2 )' }
   ]
 };
