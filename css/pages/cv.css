@@ -95,10 +95,9 @@
   border: 2px solid var(--bg);
 }
 
-/* En-tête avec logo à côté des titres */
 .timeline__header {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: var(--space-md, 1rem);
   margin-bottom: var(--space-xs);
 }
@@ -115,7 +114,6 @@
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  margin-top: 0.15rem;
 }
 
 .timeline__logo {

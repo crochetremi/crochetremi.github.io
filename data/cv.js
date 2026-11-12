@@ -67,6 +67,6 @@ export const cvData = {
 
   languages: [
     { name: 'Français', level: 'Langue maternelle' },
-    { name: 'Anglais', level: 'Professionnel (Cambridge B2 )' }
+    { name: 'Anglais', level: 'Professionnel (Cambridge B2)' }
   ]
 };
