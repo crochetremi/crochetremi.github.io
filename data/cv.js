@@ -9,7 +9,8 @@ export const cvData = {
       role: 'Alternant en Administration Systèmes et Réseaux',
       organization: 'Henri Hutin - Groupe Hochland',
       location: 'Dieue-sur-Meuse, France',
-      description: 'Pilotage de la refonte globale de la supervision (migration PRTG vers Zabbix 8 couplée à NetBox/nbxsync) avec définition des seuils critiques, escalades d’astreinte et dashboards. Support N1/N2 (AD, ClearPass, Azure, GLPI/Jira) et projets d’infrastructure (migration clients légers vers LeafOS, stack ELK, simulation GNS3).'
+      logo: "/assets/hochland.jpg",
+      description: 'Pilotage de la refonte globale de la supervision (migration PRTG vers Zabbix couplée à NetBox/nbxsync) avec définition des seuils critiques, escalades d’astreinte et dashboards. Support N1/N2 (AD, ClearPass, Azure, GLPI/Jira) et projets d’infrastructure (migration clients légers vers LeafOS, stack ELK, simulation GNS3).'
     },
     {
       period: '07/2026 — 08/2026',
@@ -32,6 +33,7 @@ export const cvData = {
       period: '2024 — 2027',
       degree: 'BUT Informatique — Parcours DACS',
       school: 'IUT Nancy-Charlemagne (Université de Lorraine)',
+      logo: "/assets/universite-lorraine.png", 
       location: 'Nancy, France',
       details: 'Parcours Déploiement d’Applications Communicantes et Sécurisées (Niveau L3). Troisième année réalisée en alternance.'
     },

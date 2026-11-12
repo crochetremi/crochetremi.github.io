@@ -6,18 +6,36 @@ function renderCV(container, site, cv) {
 
   const experiencesHTML = cv.experiences.map((exp) => `
     <article class="timeline__item">
-      <p class="timeline__period">${exp.period}</p>
-      <h3 class="timeline__role">${exp.role}</h3>
-      <p class="timeline__org">${exp.organization} • ${exp.location}</p>
+      <div class="timeline__header">
+        ${exp.logo ? `
+          <div class="timeline__logo-box">
+            <img src="${exp.logo}" alt="Logo ${exp.organization}" class="timeline__logo" loading="lazy">
+          </div>
+        ` : ''}
+        <div class="timeline__meta">
+          <p class="timeline__period">${exp.period}</p>
+          <h3 class="timeline__role">${exp.role}</h3>
+          <p class="timeline__org">${exp.organization} • ${exp.location}</p>
+        </div>
+      </div>
       <p class="timeline__desc">${exp.description}</p>
     </article>
   `).join('');
 
   const educationHTML = cv.education.map((edu) => `
     <article class="timeline__item">
-      <p class="timeline__period">${edu.period}</p>
-      <h3 class="timeline__role">${edu.degree}</h3>
-      <p class="timeline__org">${edu.school} • ${edu.location}</p>
+      <div class="timeline__header">
+        ${edu.logo ? `
+          <div class="timeline__logo-box">
+            <img src="${edu.logo}" alt="Logo ${edu.school}" class="timeline__logo" loading="lazy">
+          </div>
+        ` : ''}
+        <div class="timeline__meta">
+          <p class="timeline__period">${edu.period}</p>
+          <h3 class="timeline__role">${edu.degree}</h3>
+          <p class="timeline__org">${edu.school} • ${edu.location}</p>
+        </div>
+      </div>
       <p class="timeline__desc">${edu.details}</p>
     </article>
   `).join('');
