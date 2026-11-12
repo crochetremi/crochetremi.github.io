@@ -1,11 +1,11 @@
 :root {
-  --glass-blur: 20px;
-  --glass-saturate: 160%;
-  --surface-glass: rgba(255, 255, 255, 0.06);
+  --glass-blur: 16px;
+  --glass-saturate: 180%;
+  --surface-glass: rgba(255, 255, 255, 0.03);
   --surface-glass-fallback: rgba(24, 32, 56, 0.92);
-  --glass-border: rgba(255, 255, 255, 0.14);
-  --glass-highlight: rgba(255, 255, 255, 0.30);
-  --glass-shadow: 0 10px 30px rgba(0, 0, 0, 0.28);
+  --glass-border: rgba(255, 255, 255, 0.10);
+  --glass-highlight: rgba(255, 255, 255, 0.40);
+  --glass-shadow: 0 8px 28px rgba(0, 0, 0, 0.22);
 }
 
 /* Effet Liquid Glass (macOS) avec fallback pour navigateurs sans backdrop-filter */
@@ -13,17 +13,14 @@
 .glass-card,
 .glass-pill {
   background-color: var(--surface-glass-fallback);
-  /* Lumière douce venant du haut, au lieu de la buée diagonale */
-  background-image: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.07) 0%,
-    rgba(255, 255, 255, 0) 45%
-  );
   border: 1px solid var(--glass-border);
   box-shadow:
     var(--glass-shadow),
-    inset 0 1px 0 0 var(--glass-highlight),
-    inset 0 -1px 0 0 rgba(255, 255, 255, 0.05);
+    /* reflets spéculaires aux coins opposés : l'effet "liquide" */
+    inset 2px 2px 1px -1px var(--glass-highlight),
+    inset -2px -2px 1px -1px rgba(255, 255, 255, 0.22),
+    /* épaisseur du verre : halo intérieur doux */
+    inset 0 0 18px rgba(255, 255, 255, 0.06);
 }
 
 @supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
@@ -49,7 +46,7 @@
 
 .glass-card:hover {
   transform: translateY(-2px);
-  border-color: rgba(255, 255, 255, 0.28);
+  border-color: rgba(255, 255, 255, 0.24);
 }
 
 .glass-pill {
@@ -59,7 +56,9 @@
               transform var(--duration-fast) var(--ease-smooth);
 }
 
-.glass-pill:hover {
-  background-color: rgba(255, 255, 255, 0.12);
-  border-color: rgba(255, 255, 255, 0.28);
+/* Hover uniquement sur les éléments cliquables : la barre du haut n'est pas concernée */
+a.glass-pill:hover,
+button.glass-pill:hover {
+  background-color: rgba(255, 255, 255, 0.10);
+  border-color: rgba(255, 255, 255, 0.24);
 }
