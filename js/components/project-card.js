@@ -1,6 +1,8 @@
 export function createProjectCardHTML(project) {
-  const href = project.link || `./project.html?id=${project.id}`;
-  const isExternal = href.startsWith('http');
+  const href = project.link && project.link !== '#'
+    ? project.link
+    : `./project.html?id=${project.id}`;
+  const isExternal = String(href).startsWith('http');
   const targetAttr = isExternal ? 'target="_blank" rel="noopener noreferrer"' : '';
   const label = project.linkLabel || 'Détails sur demande';
 
