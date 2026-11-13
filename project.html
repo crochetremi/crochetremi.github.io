@@ -4,34 +4,43 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Détail du projet — Rémi Crochet</title>
-  
-  <!-- Tokens & Base -->
+  <meta name="description" content="Détail d'un projet de Rémi Crochet, alternant système et réseaux.">
+
+  <!-- Typographie : Playfair Display & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
+
+  <!-- Script anti-flash de thème (exécuté avant le rendu) -->
+  <script>
+    (function() {
+      const saved = localStorage.getItem('portfolio_theme');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      document.documentElement.setAttribute('data-theme', saved || (prefersDark ? 'dark' : 'light'));
+    })();
+  </script>
+
+  <!-- Styles -->
   <link rel="stylesheet" href="./css/tokens.css">
   <link rel="stylesheet" href="./css/base.css">
-  
-  <!-- Components -->
   <link rel="stylesheet" href="./css/components/glass.css">
   <link rel="stylesheet" href="./css/components/navbar.css">
   <link rel="stylesheet" href="./css/components/card.css">
   <link rel="stylesheet" href="./css/components/footer.css">
-  
-  <!-- Page CSS -->
   <link rel="stylesheet" href="./css/pages/project.css">
 </head>
 <body>
-  <!-- 1. Navbar injectée dynamiquement par js/main.js -->
-  <header id="navbar-container"></header>
+  <a href="#project-detail" class="skip-link">Aller au contenu principal</a>
+
+  <header id="navbar-root" class="site-header"></header>
 
   <main class="project-page" id="project-detail">
     <!-- Injecté par js/pages/project.js -->
   </main>
 
-  <!-- 2. Footer injecté dynamiquement par js/main.js -->
-  <footer id="footer-container"></footer>
+  <footer id="footer-root" class="site-footer"></footer>
 
-  <!-- 3. Script principal (gère la navbar, le footer et le thème) -->
   <script type="module" src="./js/main.js"></script>
-  <!-- 4. Script spécifique à la page détail -->
   <script type="module" src="./js/pages/project.js"></script>
 </body>
 </html>
