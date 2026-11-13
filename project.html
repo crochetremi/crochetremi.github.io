@@ -5,32 +5,33 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Détail du projet — Rémi Crochet</title>
   
-  <!-- CSS Core & Tokens -->
+  <!-- Tokens & Base -->
   <link rel="stylesheet" href="./css/tokens.css">
   <link rel="stylesheet" href="./css/base.css">
   
-  <!-- CSS Components -->
-    <link rel="stylesheet" href="./css/tokens.css">
-    <link rel="stylesheet" href="./css/base.css">
-    <link rel="stylesheet" href="./css/components/glass.css">
-    <link rel="stylesheet" href="./css/components/navbar.css">
-    <link rel="stylesheet" href="./css/components/card.css">
-    <link rel="stylesheet" href="./css/components/footer.css">
-    <link rel="stylesheet" href="./css/pages/project.css">
+  <!-- Components -->
+  <link rel="stylesheet" href="./css/components/glass.css">
+  <link rel="stylesheet" href="./css/components/navbar.css">
+  <link rel="stylesheet" href="./css/components/card.css">
+  <link rel="stylesheet" href="./css/components/footer.css">
   
-  <!-- CSS Page -->
+  <!-- Page CSS -->
   <link rel="stylesheet" href="./css/pages/project.css">
 </head>
 <body>
+  <!-- 1. Navbar injectée dynamiquement par js/main.js -->
   <header id="navbar-container"></header>
 
-  <main class="project-page container" id="project-detail">
-    <!-- Injecté dynamiquement par js/pages/project.js -->
+  <main class="project-page" id="project-detail">
+    <!-- Injecté par js/pages/project.js -->
   </main>
 
+  <!-- 2. Footer injecté dynamiquement par js/main.js -->
   <footer id="footer-container"></footer>
 
+  <!-- 3. Script principal (gère la navbar, le footer et le thème) -->
   <script type="module" src="./js/main.js"></script>
+  <!-- 4. Script spécifique à la page détail -->
   <script type="module" src="./js/pages/project.js"></script>
 </body>
 </html>
