@@ -79,12 +79,11 @@
   --accent-text: color-mix(in srgb, var(--palette-terracotta) 88%, var(--palette-forest) 12%);
   --on-accent: var(--palette-cream);
 
-   --hero-overlay: linear-gradient(
-  to bottom,
-  color-mix(in srgb, var(--palette-forest) 5%, transparent) 0%,
-  color-mix(in srgb, var(--palette-forest) 40%, transparent) 50%,
-  color-mix(in srugb, var(--palette-forest) 90%, transparent) 100%
-   );
+  --hero-overlay: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--palette-forest) 30%, transparent),
+    color-mix(in srgb, var(--palette-forest) 65%, transparent)
+  );
   --hero-text: var(--palette-cream);
   --hero-text-muted: var(--palette-sage);
 
