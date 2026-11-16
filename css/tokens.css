@@ -54,7 +54,7 @@
    ========================================================================== */
 :root,
 :root[data-theme="light"] {
-  --bg: var(--palette-cream);
+  --bg: var(--palette-forest);
   --surface: color-mix(in srgb, var(--palette-cream) 45%, white 55%);
   --surface-elevated: color-mix(in srgb, var(--palette-cream) 84%, var(--palette-sage) 16%);
   
@@ -86,6 +86,9 @@
   );
   --hero-text: var(--palette-cream);
   --hero-text-muted: var(--palette-sage);
+
+  --card-bg: #ffffff; 
+  --text-color: #212121; /* Adapter la couleur du texte si besoin pour qu'il reste lisible sur du blanc */
 }
 
 /* ==========================================================================
