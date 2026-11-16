@@ -2,11 +2,11 @@
   /* ==========================================================================
      1. PALETTE BRUTE ("Identité Hochland") — Ne jamais utiliser dans les composants
      ========================================================================== */
-  --palette-dark-blue: #463F3A;
-  --palette-royal-blue: #8A817C;
-  --palette-alpine-sky: #BCB8B1;
-  --palette-alpine-white: #F4F3EE;
-  --palette-terracotta: #E0AFA0;
+  --palette-forest: #463F3A;     /* Bleu nuit profond (fond sombre & texte principal clair) */
+  --palette-green: #8A817C;      /* Bleu royal Hochland (arche & typographie du logo) */
+  --palette-sage: #BCB8B1;       /* Bleu glacier / ciel alpin (nuances secondaires & verre) */
+  --palette-cream: #F4F3EE;      /* Blanc alpin légèrement bleuté (fond clair & texte sombre) */
+  --palette-terracotta: #E0AFA0; /* Rouge écusson Hochland (accents, boutons & appels à l'action) */
 
   /* ==========================================================================
      2. TYPOGRAPHIE & ÉCHELLES FLUIDES
