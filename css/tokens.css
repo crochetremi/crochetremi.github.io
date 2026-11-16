@@ -115,14 +115,14 @@
   --border: color-mix(in srgb, var(--palette-sage) 20%, transparent);
 
   --accent: var(--palette-terracotta);
-  --accent-hover: color-mix(in srgb, var(--palette-terracotta) 85%, white 15%);
+  --accent-hover: color-mix(in srgb, var(--palette-terracotta) 80%, white 15%);
   --accent-text: color-mix(in srgb, var(--palette-terracotta) 62%, white 38%);
   --on-accent: var(--palette-cream);
 
   --hero-overlay: linear-gradient(
     to bottom,
-    color-mix(in srgb, var(--palette-forest) 68%, transparent),
-    color-mix(in srgb, var(--palette-forest) 92%, transparent)
+    color-mix(in srgb, var(--palette-forest) 30%, transparent),
+    color-mix(in srgb, var(--palette-forest) 65%, transparent)
   );
   --hero-text: var(--palette-cream);
   --hero-text-muted: var(--palette-sage);
