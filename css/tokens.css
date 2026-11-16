@@ -81,8 +81,8 @@
 
   --hero-overlay: linear-gradient(
     to bottom,
-    color-mix(in srgb, var(--palette-forest) 60%, transparent),
-    color-mix(in srgb, var(--palette-forest) 82%, transparent)
+    color-mix(in srgb, var(--palette-forest) 20%, transparent),
+    color-mix(in srgb, var(--palette-forest) 50%, transparent)
   );
   --hero-text: var(--palette-cream);
   --hero-text-muted: var(--palette-sage);
