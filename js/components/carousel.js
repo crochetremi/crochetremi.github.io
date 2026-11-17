@@ -1,7 +1,23 @@
 import { createProjectCardHTML } from './project-card.js';
 
+let flkty = null;
+let resizeHandler = null;
+
+function destroyCarousel() {
+  if (flkty) {
+    flkty.destroy();
+    flkty = null;
+  }
+  if (resizeHandler) {
+    window.removeEventListener('resize', resizeHandler);
+    resizeHandler = null;
+  }
+}
+
 export function renderProjectsShowcase(container, projects) {
   if (!container) return;
+
+  destroyCarousel(); // toujours AVANT de modifier le DOM
 
   if (projects.length === 0) {
     container.innerHTML = `
@@ -23,7 +39,7 @@ export function renderProjectsShowcase(container, projects) {
     return;
   }
 
-  // Plus de 4 projets : Carrousel horizontal avec boucle infinie
+  // Plus de 4 projets : carrousel Flickity avec boucle infinie
   container.innerHTML = `
     <div class="carousel" role="region" aria-label="Carrousel des projets">
       <div class="carousel__header">
@@ -34,85 +50,57 @@ export function renderProjectsShowcase(container, projects) {
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
         </button>
       </div>
-      <div class="carousel__track" id="carousel-track" tabindex="0" aria-label="Liste déroulante des projets">
+      <div class="carousel__track" id="carousel-track">
         ${projects.map((p) => `<div class="carousel__slide">${createProjectCardHTML(p)}</div>`).join('')}
       </div>
     </div>
   `;
 
-  setupCarouselInteractions(container);
+  setupCarousel(container);
 }
 
-function setupCarouselInteractions(container) {
+function setupCarousel(container) {
   const track = container.querySelector('#carousel-track');
   const prevBtn = container.querySelector('#carousel-prev');
   const nextBtn = container.querySelector('#carousel-next');
 
-  const getStepWidth = () => {
-    const firstSlide = track.querySelector('.carousel__slide');
-    if (!firstSlide) return 300;
-    const gap = parseFloat(getComputedStyle(track).gap) || 24;
-    return firstSlide.getBoundingClientRect().width + gap;
-  };
-
-  const scrollNext = () => {
-    const maxScroll = track.scrollWidth - track.clientWidth;
-    // Boucle vers le début si on est à la fin
-    if (track.scrollLeft >= maxScroll - 8) {
-      track.scrollTo({ left: 0, behavior: 'smooth' });
-    } else {
-      track.scrollBy({ left: getStepWidth(), behavior: 'smooth' });
-    }
-  };
-
-  const scrollPrev = () => {
-    // Boucle vers la fin si on est au tout début
-    if (track.scrollLeft <= 8) {
-      track.scrollTo({ left: track.scrollWidth, behavior: 'smooth' });
-    } else {
-      track.scrollBy({ left: -getStepWidth(), behavior: 'smooth' });
-    }
-  };
-
-  nextBtn.addEventListener('click', scrollNext);
-  prevBtn.addEventListener('click', scrollPrev);
-
-  // Navigation clavier sur la piste
-  track.addEventListener('keydown', (e) => {
-    if (e.key === 'ArrowRight') {
-      e.preventDefault();
-      scrollNext();
-    } else if (e.key === 'ArrowLeft') {
-      e.preventDefault();
-      scrollPrev();
-    }
+  // Flickity est chargé en script classique (variable globale)
+  flkty = new Flickity(track, {
+    cellAlign: 'left',
+    wrapAround: true,        // boucle infinie
+    pageDots: false,
+    prevNextButtons: false,  // on garde tes boutons glass
+    draggable: true,
+    freeScroll: false,
+    percentPosition: false,
+    adaptiveHeight: false,
   });
 
-  // Glisser à la souris (le tactile est géré nativement par scroll-snap)
-  let isDown = false;
-  let startX = 0;
-  let scrollLeftStart = 0;
+  prevBtn.addEventListener('click', () => flkty.previous());
+  nextBtn.addEventListener('click', () => flkty.next());
 
-  track.addEventListener('mousedown', (e) => {
-    isDown = true;
-    track.classList.add('is-dragging');
-    startX = e.pageX - track.offsetLeft;
-    scrollLeftStart = track.scrollLeft;
-  });
-
-  const stopDragging = () => {
-    isDown = false;
-    track.classList.remove('is-dragging');
+  // Cartes de même hauteur (Flickity n'étire pas les cellules)
+  const equalizeHeights = () => {
+    if (!flkty) return;
+    const slides = [...track.querySelectorAll('.carousel__slide')];
+    slides.forEach((s) => (s.style.height = 'auto'));
+    const max = Math.max(...slides.map((s) => s.offsetHeight));
+    slides.forEach((s) => (s.style.height = `${max}px`));
+    flkty.resize();
   };
 
-  track.addEventListener('mouseleave', stopDragging);
-  track.addEventListener('mouseup', stopDragging);
+  equalizeHeights();
 
-  track.addEventListener('mousemove', (e) => {
-    if (!isDown) return;
-    e.preventDefault();
-    const x = e.pageX - track.offsetLeft;
-    const walk = (x - startX) * 1.4;
-    track.scrollLeft = scrollLeftStart - walk;
+  // Recalcul quand les images finissent de charger
+  track.querySelectorAll('img').forEach((img) => {
+    if (!img.complete) img.addEventListener('load', equalizeHeights, { once: true });
   });
+
+  // Recalcul au redimensionnement (le texte passe à la ligne différemment)
+  let t;
+  resizeHandler = () => {
+    clearTimeout(t);
+    t = setTimeout(equalizeHeights, 150);
+  };
+  window.addEventListener('resize', resizeHandler);
 }
