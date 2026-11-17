@@ -11,7 +11,7 @@
 /* ===== Mode carrousel ===== */
 .carousel {
   --slide-w: 66vw;          /* largeur d'une carte "normale" */
-  --slide-w-focus: 82vw;    /* largeur de la carte en focus */
+  --slide-w-focus: 100vw;    /* largeur de la carte en focus */
   --img-h: 9rem;
   position: relative;
   width: 100vw;
