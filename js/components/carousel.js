@@ -1,9 +1,16 @@
 import { createProjectCardHTML } from './project-card.js';
 
+const TRANSITION_MS = 450; // doit correspondre à la transition CSS de width
+
 let flkty = null;
 let resizeHandler = null;
+let rafId = null;
 
 function destroyCarousel() {
+  if (rafId) {
+    cancelAnimationFrame(rafId);
+    rafId = null;
+  }
   if (flkty) {
     flkty.destroy();
     flkty = null;
@@ -66,30 +73,58 @@ function setupCarousel(container) {
 
   // Flickity est chargé en script classique (variable globale)
   flkty = new Flickity(track, {
-  cellAlign: 'center',     // la carte active est centrée
-  wrapAround: true,        // boucle infinie
-  contain: false,          // sinon la 1re carte resterait collée à gauche
-  pageDots: false,
-  prevNextButtons: false,
-  draggable: true,
-  percentPosition: false,
-  adaptiveHeight: false,
+    cellAlign: 'center',     // la carte active est centrée
+    wrapAround: true,        // boucle infinie
+    contain: false,
+    pageDots: false,
+    prevNextButtons: false,  // on garde les boutons glass
+    draggable: true,
+    percentPosition: false,
+    adaptiveHeight: false,
   });
 
   prevBtn.addEventListener('click', () => flkty.previous());
   nextBtn.addEventListener('click', () => flkty.next());
 
-  // Cartes de même hauteur (Flickity n'étire pas les cellules)
+  // Égalise les hauteurs : mesure faite avec toutes les cartes à la largeur
+  // "normale" (la plus étroite, donc la plus haute), sans animation parasite.
   const equalizeHeights = () => {
     if (!flkty) return;
     const slides = [...track.querySelectorAll('.carousel__slide')];
+
+    track.classList.add('is-measuring', 'no-transition');
     slides.forEach((s) => (s.style.height = 'auto'));
     const max = Math.max(...slides.map((s) => s.offsetHeight));
     slides.forEach((s) => (s.style.height = `${max}px`));
+    track.classList.remove('is-measuring');
+    void track.offsetWidth;                  // applique l'état sans transition
+    track.classList.remove('no-transition');
+
     flkty.resize();
   };
 
+  // Pendant la transition de largeur, Flickity doit recalculer les positions
+  // à chaque image, sinon les voisines ne s'écartent pas.
+  const followAnimation = () => {
+    if (rafId) cancelAnimationFrame(rafId);
+    const end = performance.now() + TRANSITION_MS + 80;
+    const tick = () => {
+      if (!flkty) return;
+      flkty.reposition();
+      if (performance.now() < end) {
+        rafId = requestAnimationFrame(tick);
+      } else {
+        rafId = null;
+        flkty.resize();
+      }
+    };
+    rafId = requestAnimationFrame(tick);
+  };
+
+  flkty.on('select', followAnimation);
+
   equalizeHeights();
+  followAnimation(); // anime la largeur de la 1re carte dès l'init
 
   // Recalcul quand les images finissent de charger
   track.querySelectorAll('img').forEach((img) => {

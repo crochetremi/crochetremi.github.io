@@ -10,13 +10,19 @@
 
 /* ===== Mode carrousel (Flickity) ===== */
 .carousel {
-  --slide-w: 78vw;
+  --slide-w: 66vw;          /* largeur d'une carte "normale" */
+  --slide-w-focus: 82vw;    /* largeur de la carte en focus */
+  --img-h: 9rem;
   position: relative;
   width: 100vw;
   margin-left: calc(50% - 50vw);   /* sort du conteneur */
 }
-@media (min-width: 768px)  { .carousel { --slide-w: 22rem; } }
-@media (min-width: 1200px) { .carousel { --slide-w: 24rem; } }
+@media (min-width: 768px) {
+  .carousel { --slide-w: 20rem; --slide-w-focus: 30rem; --img-h: 11rem; }
+}
+@media (min-width: 1200px) {
+  .carousel { --slide-w: 22rem; --slide-w-focus: 34rem; --img-h: 12rem; }
+}
 
 .carousel__track {
   outline: none;
@@ -25,30 +31,41 @@
           mask-image: linear-gradient(to right, transparent 0, #000 15%, #000 85%, transparent 100%);
 }
 
+/* cellule : sa LARGEUR change au focus (Flickity est informé via reposition()) */
 .carousel__slide {
   width: var(--slide-w);
   margin-right: var(--space-lg);
+  transition: width 0.45s ease;
+}
+.carousel__slide.is-selected {
+  width: var(--slide-w-focus);
 }
 
-/* image : taille maîtrisée */
+/* image : hauteur fixe, la hauteur de carte ne dépend plus de la largeur */
 .carousel__slide img {
   display: block;
   width: 100%;
-  height: auto;
-  aspect-ratio: 16 / 10;
+  height: var(--img-h);
   object-fit: cover;
 }
 
-/* effet focus */
+/* effet focus : les cartes non sélectionnées sont atténuées */
 .carousel__slide > * {
   height: 100%;
   opacity: 0.55;
-  transform: scale(0.94);
-  transition: opacity 0.4s ease, transform 0.4s ease;
+  transition: opacity 0.45s ease;
 }
 .carousel__slide.is-selected > * {
   opacity: 1;
-  transform: scale(1);
+}
+
+/* états techniques utilisés par carousel.js pour mesurer les hauteurs */
+.carousel__track.is-measuring .carousel__slide {
+  width: var(--slide-w);
+}
+.carousel__track.no-transition .carousel__slide,
+.carousel__track.no-transition .carousel__slide > * {
+  transition: none;
 }
 
 /* boutons : de part et d'autre de la carte active */
@@ -58,7 +75,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-inline: calc(50% - (var(--slide-w) / 2) - 3.25rem);
+  padding-inline: calc(50% - (var(--slide-w-focus) / 2) - 3.25rem);
   pointer-events: none;
   z-index: 2;
 }
