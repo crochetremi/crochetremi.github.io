@@ -1,22 +1,11 @@
 import { createProjectCardHTML } from './project-card.js';
 
-const TRANSITION_MS = 450; // doit correspondre à --focus-duration dans carousel.css
-
-let flkty = null;
-let rafId = null;
-let cleanupCallbacks = [];
+let destroyActiveCarousel = null;
 
 function destroyCarousel() {
-  if (rafId) {
-    cancelAnimationFrame(rafId);
-    rafId = null;
-  }
-  cleanupCallbacks.forEach((fn) => fn());
-  cleanupCallbacks = [];
-
-  if (flkty) {
-    flkty.destroy();
-    flkty = null;
+  if (typeof destroyActiveCarousel === 'function') {
+    destroyActiveCarousel();
+    destroyActiveCarousel = null;
   }
 }
 
@@ -45,7 +34,7 @@ export function renderProjectsShowcase(container, projects) {
     return;
   }
 
-  // Plus de 4 projets : carrousel Flickity avec boucle infinie
+  // Plus de 4 projets : carrousel infini à moteur unifié
   container.innerHTML = `
     <div class="carousel" role="region" aria-roledescription="carrousel" aria-label="Carrousel des projets" tabindex="0">
       <div class="carousel__header">
@@ -62,7 +51,7 @@ export function renderProjectsShowcase(container, projects) {
     </div>
   `;
 
-  setupCarousel(container);
+  destroyActiveCarousel = setupCarousel(container);
 }
 
 function setupCarousel(container) {
@@ -70,27 +59,59 @@ function setupCarousel(container) {
   const track = container.querySelector('#carousel-track');
   const prevBtn = container.querySelector('#carousel-prev');
   const nextBtn = container.querySelector('#carousel-next');
+  const slides = [...track.querySelectorAll('.carousel__slide')];
+  const count = slides.length;
 
-  flkty = new Flickity(track, {
-    cellAlign: 'center',
-    wrapAround: true,
-    contain: false,
-    pageDots: false,
-    prevNextButtons: false,
-    draggable: true,
-    percentPosition: false,
-    adaptiveHeight: false,
-    selectedAttraction: 0.032,
-    friction: 0.3,
-  });
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
-  prevBtn.addEventListener('click', () => flkty.previous());
-  nextBtn.addEventListener('click', () => flkty.next());
+  // Métriques résolues depuis les variables CSS
+  let baseWidth = 320;
+  let focusWidth = 480;
+  let extraWidth = 160;
+  let gap = 24;
+  let step = 344;
 
-  const updateSelectedA11y = () => {
-    const slides = track.querySelectorAll('.carousel__slide');
-    slides.forEach((slide, idx) => {
-      if (idx === flkty.selectedIndex) {
+  // État continu du ressort (en unités d'index de tuile)
+  let pos = 0;
+  let targetPos = 0;
+  let velocity = 0;
+  let selectedIndex = 0;
+  let rafId = null;
+  let lastTime = 0;
+
+  // Constantes physiques (ressort critique fluide, sans rebond parasite)
+  const STIFFNESS = 175;
+  const DAMPING = 25;
+
+  const mod = (n, m) => ((n % m) + m) % m;
+
+  // Distance circulaire signée la plus courte entre pos et l'index i dans [-count/2, count/2]
+  const shortestDelta = (index, currentPos) => {
+    const half = count / 2;
+    return mod(index - currentPos + half, count) - half;
+  };
+
+  // Courbe d'élargissement C² continue sur [-1, 1] :
+  // f(0) = 1, f(±1) = 0, et f(Δ) + f(Δ - 1) = 1 (somme des largeurs invariante)
+  const focusWeight = (delta) => {
+    const ad = Math.abs(delta);
+    if (ad >= 1) return 0;
+    return 0.5 * (1 + Math.cos(Math.PI * delta));
+  };
+
+  // Intégrale analytique de focusWeight(u) de 0 à delta pour positionner les voisines sans dérive
+  const focusIntegral = (delta) => {
+    if (delta >= 1) return 0.5;
+    if (delta <= -1) return -0.5;
+    return 0.5 * delta + Math.sin(Math.PI * delta) / (2 * Math.PI);
+  };
+
+  const updateSelectionClasses = (nextIdx) => {
+    selectedIndex = mod(nextIdx, count);
+    slides.forEach((slide, i) => {
+      const isSelected = i === selectedIndex;
+      slide.classList.toggle('is-selected', isSelected);
+      if (isSelected) {
         slide.setAttribute('aria-current', 'true');
       } else {
         slide.removeAttribute('aria-current');
@@ -98,135 +119,272 @@ function setupCarousel(container) {
     });
   };
 
-  // Égalise les hauteurs sur la base des cartes étroites (où le texte prend le plus de lignes).
-  // Sur la carte en focus plus large, le texte prend moins de hauteur et l'image comble l'espace restant.
-  const equalizeHeights = () => {
-    if (!flkty) return;
-    const slides = [...track.querySelectorAll('.carousel__slide')];
+  // Applique géométrie exacte (largeur + translate3d) à toutes les tuiles en une passe
+  const renderFrame = () => {
+    for (let i = 0; i < count; i++) {
+      const delta = shortestDelta(i, pos);
+      const w = baseWidth + extraWidth * focusWeight(delta);
+      const centerX = delta * step + extraWidth * focusIntegral(delta);
+      const leftX = centerX - w * 0.5;
 
-    track.classList.add('is-measuring', 'no-transition');
-    slides.forEach((s) => (s.style.height = 'auto'));
-    const max = Math.max(...slides.map((s) => s.offsetHeight));
-    slides.forEach((s) => (s.style.height = `${max}px`));
-    track.classList.remove('is-measuring');
-    void track.offsetWidth;
-    track.classList.remove('no-transition');
-
-    flkty.resize();
+      const slide = slides[i];
+      slide.style.width = `${w.toFixed(2)}px`;
+      slide.style.transform = `translate3d(${leftX.toFixed(2)}px, 0, 0)`;
+    }
   };
 
-  // Synchronise le repositionnement Flickity image par image pendant l'élargissement CSS
-  const followAnimation = () => {
-    if (rafId) cancelAnimationFrame(rafId);
-    track.classList.add('is-animating');
-    const end = performance.now() + TRANSITION_MS + 60;
-
-    const tick = () => {
-      if (!flkty) return;
-      flkty.reposition();
-      if (performance.now() < end) {
-        rafId = requestAnimationFrame(tick);
-      } else {
-        rafId = null;
-        track.classList.remove('is-animating');
-        flkty.resize();
-      }
-    };
-    rafId = requestAnimationFrame(tick);
-  };
-
-  // Interrompt la boucle si l'utilisateur saisit le carrousel manuellement
-  flkty.on('dragStart', () => {
-    if (rafId) {
+  const stopLoop = () => {
+    if (rafId !== null) {
       cancelAnimationFrame(rafId);
       rafId = null;
     }
     track.classList.remove('is-animating');
-  });
-
-  flkty.on('select', () => {
-    updateSelectedA11y();
-    followAnimation();
-  });
-
-  // Ergonomie : cliquer sur une tuile latérale la met en focus au lieu d'activer un lien
-  flkty.on('staticClick', (_event, _pointer, _cellElement, cellIndex) => {
-    if (typeof cellIndex === 'number' && cellIndex !== flkty.selectedIndex) {
-      flkty.select(cellIndex);
-    }
-  });
-
-  const onTrackClickCapture = (e) => {
-    const slide = e.target.closest('.carousel__slide');
-    if (slide && !slide.classList.contains('is-selected')) {
-      e.preventDefault();
-      e.stopPropagation();
-    }
   };
-  track.addEventListener('click', onTrackClickCapture, true);
-  cleanupCallbacks.push(() => track.removeEventListener('click', onTrackClickCapture, true));
 
-  // Ergonomie : défilement horizontal au trackpad / Shift + molette
-  let wheelLocked = false;
-  let wheelTimer = null;
-  const onWheel = (e) => {
-    if (Math.abs(e.deltaX) <= Math.abs(e.deltaY) || Math.abs(e.deltaX) < 12) return;
-    e.preventDefault();
-    if (wheelLocked || !flkty) return;
+  const tick = (now) => {
+    const dt = lastTime ? Math.min((now - lastTime) / 1000, 0.032) : 1 / 60;
+    lastTime = now;
 
-    wheelLocked = true;
-    if (e.deltaX > 0) {
-      flkty.next();
+    if (prefersReducedMotion.matches) {
+      pos = targetPos;
+      velocity = 0;
+      renderFrame();
+      stopLoop();
+      return;
+    }
+
+    const displacement = targetPos - pos;
+    const force = displacement * STIFFNESS - velocity * DAMPING;
+    velocity += force * dt;
+    pos += velocity * dt;
+
+    renderFrame();
+
+    if (Math.abs(displacement) < 0.0004 && Math.abs(velocity) < 0.0004) {
+      pos = targetPos;
+      velocity = 0;
+      renderFrame();
+      stopLoop();
     } else {
-      flkty.previous();
+      rafId = requestAnimationFrame(tick);
     }
-    wheelTimer = setTimeout(() => {
-      wheelLocked = false;
-    }, 320);
   };
-  track.addEventListener('wheel', onWheel, { passive: false });
-  cleanupCallbacks.push(() => {
-    track.removeEventListener('wheel', onWheel);
-    clearTimeout(wheelTimer);
-  });
 
-  // Ergonomie : navigation clavier lorsque le carrousel a le focus
+  const startLoop = () => {
+    if (rafId !== null) return;
+    lastTime = 0;
+    track.classList.add('is-animating');
+    rafId = requestAnimationFrame(tick);
+  };
+
+  const goTo = (nextTarget) => {
+    targetPos = nextTarget;
+    updateSelectionClasses(Math.round(targetPos));
+    startLoop();
+  };
+
+  const stepBy = (dir) => {
+    goTo(Math.round(targetPos) + dir);
+  };
+
+  // Mesure les dimensions CSS résolues et égalise la hauteur des tuiles
+  const measureLayout = () => {
+    track.classList.add('is-measuring');
+
+    gap = parseFloat(getComputedStyle(slides[0]).marginRight) || 24;
+
+    slides.forEach((s) => {
+      s.style.width = '';
+      s.style.height = 'auto';
+    });
+
+    baseWidth = slides[0].getBoundingClientRect().width;
+
+    slides[0].classList.add('is-measuring-focus');
+    focusWidth = slides[0].getBoundingClientRect().width;
+    slides[0].classList.remove('is-measuring-focus');
+
+    extraWidth = Math.max(0, focusWidth - baseWidth);
+    step = baseWidth + gap;
+
+    const maxHeight = Math.max(...slides.map((s) => s.offsetHeight));
+    slides.forEach((s) => {
+      s.style.height = `${maxHeight}px`;
+    });
+    track.style.height = `${maxHeight}px`;
+
+    track.classList.remove('is-measuring');
+    renderFrame();
+  };
+
+  // Navigation boutons
+  const onPrev = () => stepBy(-1);
+  const onNext = () => stepBy(1);
+  prevBtn.addEventListener('click', onPrev);
+  nextBtn.addEventListener('click', onNext);
+
+  // Navigation clavier
   const onKeyDown = (e) => {
-    if (!flkty) return;
     if (e.key === 'ArrowLeft') {
       e.preventDefault();
-      flkty.previous();
+      stepBy(-1);
     } else if (e.key === 'ArrowRight') {
       e.preventDefault();
-      flkty.next();
+      stepBy(1);
     }
   };
   carouselEl.addEventListener('keydown', onKeyDown);
-  cleanupCallbacks.push(() => carouselEl.removeEventListener('keydown', onKeyDown));
 
-  // Initialisation immédiate et calibrée
-  updateSelectedA11y();
-  equalizeHeights();
+  // Navigation trackpad / défilement horizontal
+  let wheelLockUntil = 0;
+  const onWheel = (e) => {
+    if (Math.abs(e.deltaX) <= Math.abs(e.deltaY) || Math.abs(e.deltaX) < 12) return;
+    e.preventDefault();
+    const now = performance.now();
+    if (now < wheelLockUntil) return;
+    wheelLockUntil = now + 260;
+    stepBy(e.deltaX > 0 ? 1 : -1);
+  };
+  track.addEventListener('wheel', onWheel, { passive: false });
 
-  // Recalcul quand les images ou les polices finissent de charger
+  // Glisser interactif (souris + tactile) avec mise au focus progressive sous le doigt
+  let isPointerDown = false;
+  let isDragging = false;
+  let pointerId = null;
+  let startX = 0;
+  let startY = 0;
+  let dragStartPos = 0;
+  let lastMoveX = 0;
+  let lastMoveTime = 0;
+  let dragVelocity = 0;
+  let suppressNextClick = false;
+
+  const onPointerDown = (e) => {
+    if (e.button !== 0 && e.pointerType === 'mouse') return;
+    isPointerDown = true;
+    isDragging = false;
+    pointerId = e.pointerId;
+    startX = lastMoveX = e.clientX;
+    startY = e.clientY;
+    lastMoveTime = performance.now();
+    dragStartPos = pos;
+    dragVelocity = 0;
+  };
+
+  const onPointerMove = (e) => {
+    if (!isPointerDown || e.pointerId !== pointerId) return;
+
+    const dx = e.clientX - startX;
+    const dy = e.clientY - startY;
+
+    if (!isDragging) {
+      if (Math.hypot(dx, dy) < 6) return;
+      // Laisse défiler la page verticalement sur écran tactile
+      if (Math.abs(dy) > Math.abs(dx)) {
+        isPointerDown = false;
+        return;
+      }
+      isDragging = true;
+      suppressNextClick = true;
+      stopLoop();
+      track.classList.add('is-dragging');
+      track.setPointerCapture(pointerId);
+    }
+
+    e.preventDefault();
+    const now = performance.now();
+    const dt = Math.max((now - lastMoveTime) / 1000, 0.001);
+    const instantVel = -((e.clientX - lastMoveX) / step) / dt;
+    dragVelocity = dragVelocity * 0.65 + instantVel * 0.35;
+
+    lastMoveX = e.clientX;
+    lastMoveTime = now;
+
+    pos = dragStartPos - dx / step;
+    targetPos = pos;
+    updateSelectionClasses(Math.round(pos));
+    renderFrame();
+  };
+
+  const endDrag = (e) => {
+    if (!isPointerDown || e.pointerId !== pointerId) return;
+    isPointerDown = false;
+
+    if (isDragging) {
+      isDragging = false;
+      track.classList.remove('is-dragging');
+      if (track.hasPointerCapture(pointerId)) {
+        track.releasePointerCapture(pointerId);
+      }
+
+      // Projection inertielle douce vers la tuile cible
+      const projected = pos + dragVelocity * 0.16;
+      velocity = dragVelocity;
+      goTo(Math.round(projected));
+    }
+  };
+
+  const onDragStart = (e) => e.preventDefault();
+
+  // Clic sur une tuile latérale : la place au centre ; clic sur la tuile active : ouvre son lien
+  const onTrackClick = (e) => {
+    if (suppressNextClick) {
+      suppressNextClick = false;
+      e.preventDefault();
+      e.stopPropagation();
+      return;
+    }
+
+    const slide = e.target.closest('.carousel__slide');
+    if (!slide) return;
+
+    const clickedIndex = slides.indexOf(slide);
+    if (clickedIndex !== -1 && clickedIndex !== selectedIndex) {
+      e.preventDefault();
+      e.stopPropagation();
+      const delta = shortestDelta(clickedIndex, Math.round(targetPos));
+      goTo(Math.round(targetPos) + delta);
+    }
+  };
+
+  track.addEventListener('pointerdown', onPointerDown);
+  track.addEventListener('pointermove', onPointerMove);
+  track.addEventListener('pointerup', endDrag);
+  track.addEventListener('pointercancel', endDrag);
+  track.addEventListener('dragstart', onDragStart);
+  track.addEventListener('click', onTrackClick, true);
+
+  // Initialisation et recalculs
+  updateSelectionClasses(0);
+  measureLayout();
+
   track.querySelectorAll('img').forEach((img) => {
-    if (!img.complete) img.addEventListener('load', equalizeHeights, { once: true });
+    if (!img.complete) img.addEventListener('load', measureLayout, { once: true });
   });
   if (document.fonts?.ready) {
-    document.fonts.ready.then(() => {
-      if (flkty) equalizeHeights();
-    });
+    document.fonts.ready.then(measureLayout);
   }
 
-  // Recalcul au redimensionnement
   let resizeTimer = null;
   const onResize = () => {
     clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(equalizeHeights, 150);
+    resizeTimer = setTimeout(measureLayout, 120);
   };
   window.addEventListener('resize', onResize);
-  cleanupCallbacks.push(() => {
-    window.removeEventListener('resize', onResize);
+
+  return () => {
+    stopLoop();
     clearTimeout(resizeTimer);
-  });
+    prevBtn.removeEventListener('click', onPrev);
+    nextBtn.removeEventListener('click', onNext);
+    carouselEl.removeEventListener('keydown', onKeyDown);
+    track.removeEventListener('wheel', onWheel);
+    track.removeEventListener('pointerdown', onPointerDown);
+    track.removeEventListener('pointermove', onPointerMove);
+    track.removeEventListener('pointerup', endDrag);
+    track.removeEventListener('pointercancel', endDrag);
+    track.removeEventListener('dragstart', onDragStart);
+    track.removeEventListener('click', onTrackClick, true);
+    window.removeEventListener('resize', onResize);
+  };
 }

@@ -8,16 +8,15 @@
 @media (min-width: 960px)  { .projects-grid { grid-template-columns: repeat(3, 1fr); } }
 @media (min-width: 1200px) { .projects-grid { grid-template-columns: repeat(4, 1fr); } }
 
-/* ===== Mode carrousel (Flickity) ===== */
+/* ===== Mode carrousel ===== */
 .carousel {
   --slide-w: 66vw;          /* largeur d'une carte "normale" */
   --slide-w-focus: 82vw;    /* largeur de la carte en focus */
   --img-h: 9rem;
-  --focus-duration: 0.45s;
-  --focus-ease: cubic-bezier(0.22, 1, 0.36, 1);
   position: relative;
   width: 100vw;
   margin-left: calc(50% - 50vw);   /* sort du conteneur */
+  user-select: none;
 }
 @media (min-width: 768px) {
   .carousel { --slide-w: 20rem; --slide-w-focus: 30rem; --img-h: 11rem; }
@@ -32,23 +31,31 @@
 }
 
 .carousel__track {
+  position: relative;
+  box-sizing: content-box;
   outline: none;
   padding-block: var(--space-sm);
+  touch-action: pan-y;
+  cursor: grab;
   -webkit-mask-image: linear-gradient(to right, transparent 0, #000 15%, #000 85%, transparent 100%);
           mask-image: linear-gradient(to right, transparent 0, #000 15%, #000 85%, transparent 100%);
 }
+.carousel__track.is-dragging {
+  cursor: grabbing;
+}
 
-/* cellule : sa largeur s'élargit au focus */
+/* cellule positionnée en GPU (translate3d + largeur pilotées par la même équation) */
 .carousel__slide {
+  position: absolute;
+  top: var(--space-sm);
+  left: 50%;
   width: var(--slide-w);
   margin-right: var(--space-lg);
-  transition: width var(--focus-duration) var(--focus-ease);
+  contain: layout style;
 }
-.carousel__track.is-animating .carousel__slide {
-  will-change: width;
-}
-.carousel__slide.is-selected {
-  width: var(--slide-w-focus);
+.carousel__track.is-animating .carousel__slide,
+.carousel__track.is-dragging .carousel__slide {
+  will-change: transform, width;
 }
 .carousel__slide:not(.is-selected) {
   cursor: pointer;
@@ -61,7 +68,7 @@
   height: 100%;
   overflow: hidden;
   opacity: 0.55;
-  transition: opacity var(--focus-duration) var(--focus-ease);
+  transition: opacity 0.35s ease;
 }
 .carousel__slide.is-selected > * {
   opacity: 1;
@@ -96,18 +103,21 @@
   flex: 0 0 auto;
 }
 
-/* états techniques utilisés par carousel.js pour mesurer les hauteurs */
+/* états techniques utilisés par carousel.js pour mesurer les dimensions CSS résolues */
 .carousel__track.is-measuring .carousel__slide {
+  position: relative;
+  top: auto;
+  left: auto;
   width: var(--slide-w);
+  transform: none !important;
+}
+.carousel__track.is-measuring .carousel__slide.is-measuring-focus {
+  width: var(--slide-w-focus);
 }
 .carousel__track.is-measuring .carousel__slide > * > img,
 .carousel__track.is-measuring .carousel__slide > * > :has(> img) {
   flex: 0 0 var(--img-h);
   height: var(--img-h);
-}
-.carousel__track.no-transition .carousel__slide,
-.carousel__track.no-transition .carousel__slide > * {
-  transition: none;
 }
 
 /* boutons : de part et d'autre de la carte active */
@@ -140,6 +150,3 @@
 .carousel__btn:active {
   transform: scale(0.95);
 }
-
-.carousel__track .flickity-viewport { cursor: grab; }
-.carousel__track .flickity-viewport.is-pointer-down { cursor: grabbing; }
