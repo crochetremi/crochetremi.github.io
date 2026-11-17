@@ -98,5 +98,31 @@ export const projectsData = [
       "Application automatique des GPO dès l'intégration dans l'OU cible."
     ],
     tags: ["Windows Server 2022", "PXE", "MDT / WDS", "Active Directory", "DHCP / DNS", "PowerShell"]
+  },
+  {
+    id: "generateur-cours-word",
+    title: "Générateur de Documents Word pour la Prise de Notes de Cours",
+    category: "Développement Web",
+    isoDate: "2026-11-10",
+    displayDate: "10/11/2026",
+    featured: false,
+    image: "./assets/microsoft-word.svg",
+    imageAlt: "Aperçu du générateur de cours",
+    description: "Outil web qui transforme un cours collé en texte brut en document Word (.docx) mis en forme automatiquement...",
+    link: "./project.html?id=generateur-cours-word",
+    linkLabel: "Détails sur demande",
+    context: "Gain de temps sur la mise en forme de mes notes de cours : transformer un texte brut en document structuré et homogène, sans retravailler manuellement chaque titre dans Word.",
+    objectives: [
+      "Détecter automatiquement la hiérarchie du cours (thèmes, chapitres, sections, sous-sections, points de détail) à partir de la numérotation.",
+      "Reconnaître et mettre en forme distinctement les citations, articles de loi et jurisprudence.",
+      "Offrir un rendu personnalisable (palette, police, styles par niveau) avec un aperçu en direct."
+    ],
+    details: [
+      "Développement de l'interface de saisie : palettes de couleurs, choix de la police, en-tête (titre, sous-titre, modalités) et légende optionnelle.",
+      "Création d'un moteur d'analyse du texte avec détection automatique des niveaux et des citations.",
+      "Réglage individuel de la taille, de la couleur, du gras et de l'italique pour chaque niveau.",
+      "Génération et téléchargement du fichier .docx directement depuis le navigateur."
+    ],
+    tags: ["JavaScript", "HTML / CSS", "Génération .docx", "Analyse de texte", "UX / UI"]
   }
 ];
