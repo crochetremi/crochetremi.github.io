@@ -13,6 +13,8 @@
   --slide-w: 66vw;          /* largeur d'une carte "normale" */
   --slide-w-focus: 82vw;    /* largeur de la carte en focus */
   --img-h: 9rem;
+  --focus-duration: 0.45s;
+  --focus-ease: cubic-bezier(0.22, 1, 0.36, 1);
   position: relative;
   width: 100vw;
   margin-left: calc(50% - 50vw);   /* sort du conteneur */
@@ -24,6 +26,11 @@
   .carousel { --slide-w: 22rem; --slide-w-focus: 34rem; --img-h: 12rem; }
 }
 
+.carousel:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+
 .carousel__track {
   outline: none;
   padding-block: var(--space-sm);
@@ -31,37 +38,72 @@
           mask-image: linear-gradient(to right, transparent 0, #000 15%, #000 85%, transparent 100%);
 }
 
-/* cellule : sa LARGEUR change au focus (Flickity est informé via reposition()) */
+/* cellule : sa largeur s'élargit au focus */
 .carousel__slide {
   width: var(--slide-w);
   margin-right: var(--space-lg);
-  transition: width 0.45s ease;
+  transition: width var(--focus-duration) var(--focus-ease);
+}
+.carousel__track.is-animating .carousel__slide {
+  will-change: width;
 }
 .carousel__slide.is-selected {
   width: var(--slide-w-focus);
 }
-
-/* image : hauteur fixe, la hauteur de carte ne dépend plus de la largeur */
-.carousel__slide img {
-  display: block;
-  width: 100%;
-  height: var(--img-h);
-  object-fit: cover;
+.carousel__slide:not(.is-selected) {
+  cursor: pointer;
 }
 
-/* effet focus : les cartes non sélectionnées sont atténuées */
+/* structure interne de la tuile : colonne flex pour laisser l'image occuper tout l'espace restant */
 .carousel__slide > * {
+  display: flex;
+  flex-direction: column;
   height: 100%;
+  overflow: hidden;
   opacity: 0.55;
-  transition: opacity 0.45s ease;
+  transition: opacity var(--focus-duration) var(--focus-ease);
 }
 .carousel__slide.is-selected > * {
   opacity: 1;
 }
 
+/* image directe ou encapsulée : s'étire pour combler la hauteur disponible restante */
+.carousel__slide > * > img {
+  display: block;
+  width: 100%;
+  flex: 1 1 auto;
+  min-height: var(--img-h);
+  height: auto;
+  object-fit: cover;
+}
+
+.carousel__slide > * > :has(> img) {
+  flex: 1 1 auto;
+  min-height: var(--img-h);
+  display: flex;
+  overflow: hidden;
+}
+
+.carousel__slide > * > :has(> img) > img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* blocs textuels : conservent leur hauteur naturelle en bas de la tuile */
+.carousel__slide > * > :not(img):not(:has(> img)) {
+  flex: 0 0 auto;
+}
+
 /* états techniques utilisés par carousel.js pour mesurer les hauteurs */
 .carousel__track.is-measuring .carousel__slide {
   width: var(--slide-w);
+}
+.carousel__track.is-measuring .carousel__slide > * > img,
+.carousel__track.is-measuring .carousel__slide > * > :has(> img) {
+  flex: 0 0 var(--img-h);
+  height: var(--img-h);
 }
 .carousel__track.no-transition .carousel__slide,
 .carousel__track.no-transition .carousel__slide > * {
@@ -75,7 +117,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-inline: calc(50% - (var(--slide-w-focus) / 2) - 3.25rem);
+  padding-inline: max(0.75rem, calc(50% - (var(--slide-w-focus) / 2) - 3.25rem));
   pointer-events: none;
   z-index: 2;
 }
@@ -89,10 +131,14 @@
   cursor: pointer;
   color: var(--text);
   pointer-events: auto;
+  transition: border-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
 }
 .carousel__btn:hover {
   border-color: var(--accent);
   color: var(--accent-text);
+}
+.carousel__btn:active {
+  transform: scale(0.95);
 }
 
 .carousel__track .flickity-viewport { cursor: grab; }

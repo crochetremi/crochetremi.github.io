@@ -1,23 +1,22 @@
 import { createProjectCardHTML } from './project-card.js';
 
-const TRANSITION_MS = 450; // doit correspondre à la transition CSS de width
+const TRANSITION_MS = 450; // doit correspondre à --focus-duration dans carousel.css
 
 let flkty = null;
-let resizeHandler = null;
 let rafId = null;
+let cleanupCallbacks = [];
 
 function destroyCarousel() {
   if (rafId) {
     cancelAnimationFrame(rafId);
     rafId = null;
   }
+  cleanupCallbacks.forEach((fn) => fn());
+  cleanupCallbacks = [];
+
   if (flkty) {
     flkty.destroy();
     flkty = null;
-  }
-  if (resizeHandler) {
-    window.removeEventListener('resize', resizeHandler);
-    resizeHandler = null;
   }
 }
 
@@ -48,7 +47,7 @@ export function renderProjectsShowcase(container, projects) {
 
   // Plus de 4 projets : carrousel Flickity avec boucle infinie
   container.innerHTML = `
-    <div class="carousel" role="region" aria-label="Carrousel des projets">
+    <div class="carousel" role="region" aria-roledescription="carrousel" aria-label="Carrousel des projets" tabindex="0">
       <div class="carousel__header">
         <button type="button" class="carousel__btn glass-pill" id="carousel-prev" aria-label="Projet précédent">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
@@ -67,27 +66,40 @@ export function renderProjectsShowcase(container, projects) {
 }
 
 function setupCarousel(container) {
+  const carouselEl = container.querySelector('.carousel');
   const track = container.querySelector('#carousel-track');
   const prevBtn = container.querySelector('#carousel-prev');
   const nextBtn = container.querySelector('#carousel-next');
 
-  // Flickity est chargé en script classique (variable globale)
   flkty = new Flickity(track, {
-    cellAlign: 'center',     // la carte active est centrée
-    wrapAround: true,        // boucle infinie
+    cellAlign: 'center',
+    wrapAround: true,
     contain: false,
     pageDots: false,
-    prevNextButtons: false,  // on garde les boutons glass
+    prevNextButtons: false,
     draggable: true,
     percentPosition: false,
     adaptiveHeight: false,
+    selectedAttraction: 0.032,
+    friction: 0.3,
   });
 
   prevBtn.addEventListener('click', () => flkty.previous());
   nextBtn.addEventListener('click', () => flkty.next());
 
-  // Égalise les hauteurs : mesure faite avec toutes les cartes à la largeur
-  // "normale" (la plus étroite, donc la plus haute), sans animation parasite.
+  const updateSelectedA11y = () => {
+    const slides = track.querySelectorAll('.carousel__slide');
+    slides.forEach((slide, idx) => {
+      if (idx === flkty.selectedIndex) {
+        slide.setAttribute('aria-current', 'true');
+      } else {
+        slide.removeAttribute('aria-current');
+      }
+    });
+  };
+
+  // Égalise les hauteurs sur la base des cartes étroites (où le texte prend le plus de lignes).
+  // Sur la carte en focus plus large, le texte prend moins de hauteur et l'image comble l'espace restant.
   const equalizeHeights = () => {
     if (!flkty) return;
     const slides = [...track.querySelectorAll('.carousel__slide')];
@@ -97,17 +109,18 @@ function setupCarousel(container) {
     const max = Math.max(...slides.map((s) => s.offsetHeight));
     slides.forEach((s) => (s.style.height = `${max}px`));
     track.classList.remove('is-measuring');
-    void track.offsetWidth;                  // applique l'état sans transition
+    void track.offsetWidth;
     track.classList.remove('no-transition');
 
     flkty.resize();
   };
 
-  // Pendant la transition de largeur, Flickity doit recalculer les positions
-  // à chaque image, sinon les voisines ne s'écartent pas.
+  // Synchronise le repositionnement Flickity image par image pendant l'élargissement CSS
   const followAnimation = () => {
     if (rafId) cancelAnimationFrame(rafId);
-    const end = performance.now() + TRANSITION_MS + 80;
+    track.classList.add('is-animating');
+    const end = performance.now() + TRANSITION_MS + 60;
+
     const tick = () => {
       if (!flkty) return;
       flkty.reposition();
@@ -115,27 +128,105 @@ function setupCarousel(container) {
         rafId = requestAnimationFrame(tick);
       } else {
         rafId = null;
+        track.classList.remove('is-animating');
         flkty.resize();
       }
     };
     rafId = requestAnimationFrame(tick);
   };
 
-  flkty.on('select', followAnimation);
+  // Interrompt la boucle si l'utilisateur saisit le carrousel manuellement
+  flkty.on('dragStart', () => {
+    if (rafId) {
+      cancelAnimationFrame(rafId);
+      rafId = null;
+    }
+    track.classList.remove('is-animating');
+  });
 
+  flkty.on('select', () => {
+    updateSelectedA11y();
+    followAnimation();
+  });
+
+  // Ergonomie : cliquer sur une tuile latérale la met en focus au lieu d'activer un lien
+  flkty.on('staticClick', (_event, _pointer, _cellElement, cellIndex) => {
+    if (typeof cellIndex === 'number' && cellIndex !== flkty.selectedIndex) {
+      flkty.select(cellIndex);
+    }
+  });
+
+  const onTrackClickCapture = (e) => {
+    const slide = e.target.closest('.carousel__slide');
+    if (slide && !slide.classList.contains('is-selected')) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  };
+  track.addEventListener('click', onTrackClickCapture, true);
+  cleanupCallbacks.push(() => track.removeEventListener('click', onTrackClickCapture, true));
+
+  // Ergonomie : défilement horizontal au trackpad / Shift + molette
+  let wheelLocked = false;
+  let wheelTimer = null;
+  const onWheel = (e) => {
+    if (Math.abs(e.deltaX) <= Math.abs(e.deltaY) || Math.abs(e.deltaX) < 12) return;
+    e.preventDefault();
+    if (wheelLocked || !flkty) return;
+
+    wheelLocked = true;
+    if (e.deltaX > 0) {
+      flkty.next();
+    } else {
+      flkty.previous();
+    }
+    wheelTimer = setTimeout(() => {
+      wheelLocked = false;
+    }, 320);
+  };
+  track.addEventListener('wheel', onWheel, { passive: false });
+  cleanupCallbacks.push(() => {
+    track.removeEventListener('wheel', onWheel);
+    clearTimeout(wheelTimer);
+  });
+
+  // Ergonomie : navigation clavier lorsque le carrousel a le focus
+  const onKeyDown = (e) => {
+    if (!flkty) return;
+    if (e.key === 'ArrowLeft') {
+      e.preventDefault();
+      flkty.previous();
+    } else if (e.key === 'ArrowRight') {
+      e.preventDefault();
+      flkty.next();
+    }
+  };
+  carouselEl.addEventListener('keydown', onKeyDown);
+  cleanupCallbacks.push(() => carouselEl.removeEventListener('keydown', onKeyDown));
+
+  // Initialisation immédiate et calibrée
+  updateSelectedA11y();
   equalizeHeights();
-  followAnimation(); // anime la largeur de la 1re carte dès l'init
 
-  // Recalcul quand les images finissent de charger
+  // Recalcul quand les images ou les polices finissent de charger
   track.querySelectorAll('img').forEach((img) => {
     if (!img.complete) img.addEventListener('load', equalizeHeights, { once: true });
   });
+  if (document.fonts?.ready) {
+    document.fonts.ready.then(() => {
+      if (flkty) equalizeHeights();
+    });
+  }
 
-  // Recalcul au redimensionnement (le texte passe à la ligne différemment)
-  let t;
-  resizeHandler = () => {
-    clearTimeout(t);
-    t = setTimeout(equalizeHeights, 150);
+  // Recalcul au redimensionnement
+  let resizeTimer = null;
+  const onResize = () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(equalizeHeights, 150);
   };
-  window.addEventListener('resize', resizeHandler);
+  window.addEventListener('resize', onResize);
+  cleanupCallbacks.push(() => {
+    window.removeEventListener('resize', onResize);
+    clearTimeout(resizeTimer);
+  });
 }
