@@ -1,18 +1,65 @@
-/* Mode Carrousel : une carte "focus" à 65 %, les voisines dépassent */
+/* ===== Mode grille (4 projets ou moins) ===== */
+.projects-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-lg);
+}
+@media (min-width: 640px)  { .projects-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 960px)  { .projects-grid { grid-template-columns: repeat(3, 1fr); } }
+@media (min-width: 1200px) { .projects-grid { grid-template-columns: repeat(4, 1fr); } }
+
+/* ===== Mode carrousel (Flickity) ===== */
 .carousel {
+  --slide-w: 78vw;
   position: relative;
+  width: 100vw;
+  margin-left: calc(50% - 50vw);   /* sort du conteneur */
+}
+@media (min-width: 768px)  { .carousel { --slide-w: 22rem; } }
+@media (min-width: 1200px) { .carousel { --slide-w: 24rem; } }
+
+.carousel__track {
+  outline: none;
+  padding-block: var(--space-sm);
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 15%, #000 85%, transparent 100%);
+          mask-image: linear-gradient(to right, transparent 0, #000 15%, #000 85%, transparent 100%);
 }
 
-/* Boutons superposés sur les côtés, comme dans l'exemple CodePen */
+.carousel__slide {
+  width: var(--slide-w);
+  margin-right: var(--space-lg);
+}
+
+/* image : taille maîtrisée */
+.carousel__slide img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+}
+
+/* effet focus */
+.carousel__slide > * {
+  height: 100%;
+  opacity: 0.55;
+  transform: scale(0.94);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+.carousel__slide.is-selected > * {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* boutons : de part et d'autre de la carte active */
 .carousel__header {
   position: absolute;
   inset: 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin: 0;
-  padding-inline: var(--space-sm);
-  pointer-events: none;   /* laisse passer le drag sur la piste */
+  padding-inline: calc(50% - (var(--slide-w) / 2) - 3.25rem);
+  pointer-events: none;
   z-index: 2;
 }
 
@@ -20,47 +67,16 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  flex: 0 0 2.75rem;
-  width: 2.75rem;
-  height: 2.75rem;
+  width: 2.5rem;
+  height: 2.5rem;
   cursor: pointer;
   color: var(--text);
   pointer-events: auto;
 }
-
 .carousel__btn:hover {
   border-color: var(--accent);
   color: var(--accent-text);
 }
 
-.carousel__track {
-  --carousel-gap: var(--space-lg);
-  outline: none;
-  padding-block: var(--space-sm);
-}
-
-.carousel__slide {
-  width: 85%;                         /* mobile */
-  margin-right: var(--carousel-gap);
-}
-
-@media (min-width: 768px) {
-  .carousel__slide { width: 65%; }    /* focus à 65 % */
-}
-
-/* la carte remplit la hauteur de la cellule + effet focus */
-.carousel__slide > * {
-  height: 70%;
-  opacity: 0.55;
-  transform: scale(0.94);
-  transition: opacity 0.4s ease, transform 0.4s ease;
-}
-
-.carousel__slide.is-selected > * {
-  opacity: 1;
-  transform: scale(1);
-}
-
-/* curseur de drag */
 .carousel__track .flickity-viewport { cursor: grab; }
 .carousel__track .flickity-viewport.is-pointer-down { cursor: grabbing; }

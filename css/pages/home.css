@@ -19,3 +19,7 @@
   color: var(--text-muted);
   font-size: var(--text-sm);
 }
+
+main { overflow-x: clip; }
+
+.filters-bar { margin-bottom: var(--space-md); }
