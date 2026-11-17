@@ -66,14 +66,14 @@ function setupCarousel(container) {
 
   // Flickity est chargé en script classique (variable globale)
   flkty = new Flickity(track, {
-    cellAlign: 'left',
-    wrapAround: true,        // boucle infinie
-    pageDots: false,
-    prevNextButtons: false,  // on garde tes boutons glass
-    draggable: true,
-    freeScroll: false,
-    percentPosition: false,
-    adaptiveHeight: false,
+  cellAlign: 'center',     // la carte active est centrée
+  wrapAround: true,        // boucle infinie
+  contain: false,          // sinon la 1re carte resterait collée à gauche
+  pageDots: false,
+  prevNextButtons: false,
+  draggable: true,
+  percentPosition: false,
+  adaptiveHeight: false,
   });
 
   prevBtn.addEventListener('click', () => flkty.previous());

@@ -1,33 +1,66 @@
-/* Mode Carrousel (Plus de 4 projets) — Flickity */
+/* Mode Carrousel : une carte "focus" à 65 %, les voisines dépassent */
+.carousel {
+  position: relative;
+}
+
+/* Boutons superposés sur les côtés, comme dans l'exemple CodePen */
+.carousel__header {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0;
+  padding-inline: var(--space-sm);
+  pointer-events: none;   /* laisse passer le drag sur la piste */
+  z-index: 2;
+}
+
+.carousel__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 2.75rem;
+  width: 2.75rem;
+  height: 2.75rem;
+  cursor: pointer;
+  color: var(--text);
+  pointer-events: auto;
+}
+
+.carousel__btn:hover {
+  border-color: var(--accent);
+  color: var(--accent-text);
+}
+
 .carousel__track {
   --carousel-gap: var(--space-lg);
-  --carousel-visible: 1.2;              /* mobile : suggère le défilement */
   outline: none;
-  padding-bottom: var(--space-sm);
+  padding-block: var(--space-sm);
 }
 
 .carousel__slide {
-  width: calc(
-    (100% - (var(--carousel-visible) - 1) * var(--carousel-gap)) / var(--carousel-visible)
-  );
+  width: 85%;                         /* mobile */
   margin-right: var(--carousel-gap);
 }
 
-/* la carte remplit toute la hauteur de la cellule */
+@media (min-width: 768px) {
+  .carousel__slide { width: 65%; }    /* focus à 65 % */
+}
+
+/* la carte remplit la hauteur de la cellule + effet focus */
 .carousel__slide > * {
   height: 100%;
+  opacity: 0.55;
+  transform: scale(0.94);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.carousel__slide.is-selected > * {
+  opacity: 1;
+  transform: scale(1);
 }
 
 /* curseur de drag */
 .carousel__track .flickity-viewport { cursor: grab; }
 .carousel__track .flickity-viewport.is-pointer-down { cursor: grabbing; }
-
-/* Tablette : 3 cartes visibles */
-@media (min-width: 768px) {
-  .carousel__track { --carousel-visible: 3; }
-}
-
-/* Grand écran : 4 cartes visibles */
-@media (min-width: 1200px) {
-  .carousel__track { --carousel-visible: 4; }
-}
