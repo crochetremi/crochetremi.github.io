@@ -50,7 +50,7 @@
 
 /* la carte remplit la hauteur de la cellule + effet focus */
 .carousel__slide > * {
-  height: 80%;
+  height: 50%;
   opacity: 0.55;
   transform: scale(0.94);
   transition: opacity 0.4s ease, transform 0.4s ease;
